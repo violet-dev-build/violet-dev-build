@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - "dev"
+  push:
   merge_group:
   workflow_dispatch:
 
