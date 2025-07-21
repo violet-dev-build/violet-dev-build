@@ -1,12 +1,11 @@
 name: CI
 on:
-  pull_request:
-    branches:
-      - "dev"
-  push:
-  merge_group:
+  schedule:
+  - cron: '* */24 * * *'
   workflow_dispatch:
-
+env:
+  target_owner: 'project-violet'
+  target_repository: 'violet'
 jobs:
   app-changes:
     runs-on: ubuntu-latest
@@ -19,6 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          repository: ${{ env.target_owner }}/${{ env.target_repository }}
           ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
 
       # For pull requests it's not necessary to checkout the code
@@ -40,11 +40,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          repository: ${{ env.target_owner }}/${{ env.target_repository }}
           ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
 
-      - uses: actions/setup-java@main
+      - uses: actions/setup-java@v1
         with:
-          distribution: "temurin"
           java-version: "17.x"
 
       - uses: subosito/flutter-action@v1
@@ -76,6 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          repository: ${{ env.target_owner }}/${{ env.target_repository }}
           ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
 
       - uses: subosito/flutter-action@v2
@@ -94,6 +95,7 @@ jobs:
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
           wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+          cd ../..
 
       - name: Podfile
         run: |
@@ -129,13 +131,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          repository: ${{ env.target_owner }}/${{ env.target_repository }}
           ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
 
-      - uses: actions/setup-java@main
+      - uses: actions/setup-java@v1
         with:
-          distribution: "temurin"
           java-version: "17.x"
-
+          
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
@@ -152,6 +154,7 @@ jobs:
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }} || echo 'String getValid(String vToken) { return vToken; }' > salt.dart
           wget -q ${{ secrets.SECRET_WSALT }} || echo 'String getValid(String vToken) { return vToken; }' > wsalt.dart
+          cd ../..
 
       - name: Build
         run: |
@@ -163,7 +166,6 @@ jobs:
         with:
           name: apk-build
           path: ./violet/build/app/outputs/apk/release/app-release.apk
-
   app-windows-build:
     runs-on: windows-latest
     needs: [app-format, app-changes]
@@ -174,11 +176,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          repository: ${{ env.target_owner }}/${{ env.target_repository }}
           ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
 
-      - uses: actions/setup-java@main
+      - uses: actions/setup-java@v1
         with:
-          distribution: "temurin"
           java-version: "17.x"
 
       - uses: subosito/flutter-action@v2
@@ -218,13 +220,17 @@ jobs:
         run: |
           flutter clean
           flutter build windows --release
+      - name: Archive
+        shell: powershell
+        run: |
+          Compress-Archive -Path ./build/windows/x64/runner/Release/ -DestinationPath ./Windows.zip
+          ls
 
-      - name: Upload APK
+      - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: ./violet/build/windows/x64/runner/Release/
-
+          path: ./violet/Windows.zip
   release:
     needs: [ app-android-build, app-ios-build, app-windows-build ]
     runs-on: ubuntu-latest
@@ -234,7 +240,7 @@ jobs:
         repository: ${{ env.target_owner }}/${{ env.target_repository }}
         ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
         path: violet
-    - name: Show SHA
+    - name:
       id: tag
       run: |
         cd violet
