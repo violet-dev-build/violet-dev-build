@@ -8,9 +8,9 @@
       "bundleIdentifier": "xyz.project.violet",
       "developerName": "Project Violet",
       "version": "Object",
-      "versionDate": "2025-08-24T01:29:54",
-      "versionDescription": "version: update version (dev-987f8e5f35a8f37cc38a37cfdcb05f77b46cdbd4)",
-      "downloadURL": "https://github.com/violet-dev-build/violet-dev-build/releases/download/dev-987f8e5f35a8f37cc38a37cfdcb05f77b46cdbd4/Payload.ipa",
+      "versionDate": "2025-08-25T01:27:03",
+      "versionDescription": "version: update version (dev-2001ad0f8545c68cd196254162201dd735886bc6)",
+      "downloadURL": "https://github.com/violet-dev-build/violet-dev-build/releases/download/dev-2001ad0f8545c68cd196254162201dd735886bc6/Payload.ipa",
       "localizedDescription": "An unofficial E-Hentai App for iOS.",
       "iconURL": "https://raw.githubusercontent.com/project-violet/violet/dev/violet/assets/images/logo.png",
       "tintColor": "289979",
@@ -30,7 +30,7 @@
       "caption": "Open Source Hentai Viewer App",
       "tintColor": "289979",
       "appID": "xyz.project.violet",
-      "date": "2025-08-24",
+      "date": "2025-08-25",
       "notify": false
     }
   ]
